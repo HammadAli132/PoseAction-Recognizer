@@ -46,7 +46,15 @@ def to_custom_keypoints(yolo_kps):
 
 class PoseExtractor:
     def __init__(self, model_path="yolov8n-pose.pt"):
-        self.model = YOLO(model_path)
+        # Build absolute path to /models
+        root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../src/"))
+        models_dir = os.path.join(root_dir, "models")
+        model_full_path = os.path.join(models_dir, model_path)
+
+        if not os.path.exists(model_full_path):
+            raise FileNotFoundError(f"Model not found: {model_full_path}")
+
+        self.model = YOLO(model_full_path)
 
     def _save_coco(self, annotations, images_info, output_dir):
         """Save in COCO keypoints format for CVAT."""
